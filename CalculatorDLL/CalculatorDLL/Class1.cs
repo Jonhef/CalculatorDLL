@@ -1,4 +1,4 @@
-﻿namespace CalculatorDLL
+namespace CalculatorDLL
 {
     public class Expression
     {
