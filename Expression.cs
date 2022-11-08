@@ -9,33 +9,6 @@ namespace CalculatorDLL
             get { return _expr; }
             set
             {
-                //for (int i = 0; i < value.Length; ++i)
-                //{
-                //    for (int j = 58; j <= 255; ++j)
-                //    {
-                //        if (value[i] == (char)j)
-                //        {
-                //            throw new ArgumentException("Expression have symbol");
-                //        }
-                //    }
-                //    for (int j = 0; j <= 39; ++j)
-                //    {
-                //        if (value[i] == (char)j)
-                //        {
-                //            throw new ArgumentException("Expression have symbol");
-                //        }
-                //    }
-                //    if (value[i] == (char)44 || value[i] == (char)46) throw new ArgumentException("Expression have symbol");
-                //}
-                //for (int i = 58; i <= 255; ++i)
-                //{
-                //    if (value.Contains((char)i)) throw new ArgumentException("Expression have symbol");
-                //}
-                //for (int i = 0; i <= 39; ++i)
-                //{
-                //    if (value.Contains((char)i)) throw new ArgumentException("Expression have symbol");
-                //}
-                //if (value.Contains((char)44) || value.Contains((char)46)) throw new ArgumentException("Expression have symbol");
                 _expr = value;
             }
         }
@@ -45,35 +18,14 @@ namespace CalculatorDLL
         }
         public Expression(string expr)
         {
+            if (expr == null) throw new ArgumentNullException("Expression is null");
             this.expr = expr;
         }
         public float Calculate()
         {
-            StringCalc num = new StringCalc(_expr, 0);
-            float res = Expr(num);
-            return res;
+            return Expr(new StringCalc(_expr, 0));
         }
-        //private float Expr(StringCalc num)
-        //{
-        //    float x = factor(num);
-        //    for (; ; )
-        //    {
-        //        char c = num.str[num.index];
-        //        switch (c)
-        //        {
-        //            case '+':
-        //                x += factor(num);
-        //                break;
-        //            case '-':
-        //                x -= factor(num);
-        //                break;
-        //            default:
-        //                --(num.index);
-        //                return x;
-        //        }
-        //    }
-        //}
-        private float skobki(StringCalc num)
+        private float Brackets(StringCalc num)
         {
             char c = num.str[num.index];
             ++num.index;
@@ -86,10 +38,10 @@ namespace CalculatorDLL
             else
             {
                 --num.index;
-                return number(num);
+                return Number(num);
             }
         }
-        private float number(StringCalc num)
+        private float Number(StringCalc num)
         {
             int res = 0;
             for (; ; )
@@ -109,14 +61,14 @@ namespace CalculatorDLL
                 }
             }
         }
-        private float factorial(int num)
+        private float Factorial(int num)
         {
-            if (num != 0) return num * factorial(num - 1);
+            if (num != 0) return num * Factorial(num - 1);
             return 1;
         }
-        private float factor(StringCalc num)
+        private float Factor(StringCalc num)
         {
-            float x = skobki(num);
+            float x = Brackets(num);
             for (; ; )
             {
                 if (num.index >= num.str.Length)
@@ -128,16 +80,16 @@ namespace CalculatorDLL
                 switch (c)
                 {
                     case '*':
-                        x *= skobki(num);
+                        x *= Brackets(num);
                         break;
                     case '/':
-                        x /= skobki(num);
+                        x /= Brackets(num);
                         break;
                     case '!':
-                        x = factorial((int)x);
+                        x = Factorial((int)x);
                         break;
                     case '^':
-                        x = (float)Math.Pow(x, skobki(num));
+                        x = (float)Math.Pow(x, Brackets(num));
                         break;
                     default:
                         --num.index;
@@ -147,7 +99,7 @@ namespace CalculatorDLL
         }
         private float Expr(StringCalc num)
         {
-            float x = factor(num);
+            float x = Factor(num);
             for (; ; )
             {
                 if (num.index >= num.str.Length)
@@ -160,10 +112,10 @@ namespace CalculatorDLL
                 switch (c)
                 {
                     case '+':
-                        x += factor(num);
+                        x += Factor(num);
                         break;
                     case '-':
-                        x -= factor(num);
+                        x -= Factor(num);
                         break;
                     default:
                         --num.index;
